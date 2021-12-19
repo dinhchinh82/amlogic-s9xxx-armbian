@@ -16,7 +16,7 @@ on:
       kernel_ver:
         description: "Kernel version: 5.4.160"
         required: false
-        default: "5.4.160_5.10.80_5.7.19"
+        default: "5.4.160_5.10.86_5.7.19"
 
 env:
   UPLOAD_KERNEL: false
