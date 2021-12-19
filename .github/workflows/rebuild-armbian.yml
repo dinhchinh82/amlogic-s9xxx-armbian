@@ -75,7 +75,7 @@ jobs:
         with:
           armbian_path: ${{ env.ARMBIAN_URL }}
           armbian_soc: s905x3
-          armbian_kernel: 5.10.80_5.4.160
+          armbian_kernel: 5.10.80_5.7.19
           armbian_size: 6500
 
       - name: Upload Armbian image to Actions
