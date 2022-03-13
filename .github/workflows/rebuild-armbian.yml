@@ -74,6 +74,8 @@ jobs:
           armbian_path: ${{ env.ARMBIAN_URL }}
           armbian_soc: s905x3
           armbian_kernel: 5.15.25_5.4.180
+          armbian_size: 6500
+
 
       - name: Upload Armbian image to Release
         id: release
