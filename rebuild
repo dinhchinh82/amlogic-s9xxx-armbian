@@ -77,6 +77,7 @@ build_armbian=(
     "s905x"
     "s905w"
     "s905"
+    "rk3328"
 )
 # Set Armbian firmware size (SKIP_MB >= 4, BOOT_MB >= 256, ROOT_MB >= 2000)
 SKIP_MB="68"
@@ -366,6 +367,11 @@ confirm_version() {
         MAINLINE_UBOOT="khadas-vim3-u-boot.sd.bin"
         ANDROID_UBOOT=""
         ;;
+    rk3328 | t9)
+        FDTFILE="rk3328-box.dtb"
+        MAINLINE_UBOOT=""
+        ANDROID_UBOOT=""
+        ;;
     *)
         error_msg "Have no this soc: [ ${soc} ]"
         ;;
@@ -440,9 +446,9 @@ refactor_files() {
     # Copy the overload files
     cp -f ${uboot_path}/overload/* ${tag_bootfs}
 
-    # Replace the kernel
+    # Replace the kernel dtb-rockchip-5.4.188-flippy-71+o.tar.gz
     build_boot=$(ls ${kernel_path}/${kernel}/boot-${kernel}-*.tar.gz 2>/dev/null | head -n 1)
-    build_dtb=$(ls ${kernel_path}/${kernel}/dtb-amlogic-${kernel}-*.tar.gz 2>/dev/null | head -n 1)
+    build_dtb=$(ls ${kernel_path}/${kernel}/dtb-rockchip-${kernel}-*.tar.gz 2>/dev/null | head -n 1)
     build_modules=$(ls ${kernel_path}/${kernel}/modules-${kernel}-*.tar.gz 2>/dev/null | head -n 1)
     build_header=$(ls ${kernel_path}/${kernel}/header-${kernel}-*.tar.gz 2>/dev/null | head -n 1)
     [[ -n "${build_boot}" && -n "${build_dtb}" && -n "${build_modules}" && -n "${build_header}" ]] || error_msg "The 4 kernel missing."
@@ -454,7 +460,7 @@ refactor_files() {
     get_textoffset "${tag_bootfs}/zImage"
 
     # 02 For dtb files
-    tar -xzf ${build_dtb} -C ${tag_bootfs}/dtb/amlogic && sync
+    tar -xzf ${build_dtb} -C ${tag_bootfs}/dtb/rockchip && sync
 
     # 03 For usr/lib/modules/*
     tar -xzf ${build_modules} -C ${tag_rootfs}/usr/lib/modules && sync
@@ -598,8 +604,8 @@ make_image() {
     process_msg " (4/6) Make new armbian image."
     cd ${make_path}
 
-    # Make Amlogic s9xxx armbian
-    build_image_file="${tmp_outpath}/Armbian_${armbian_rebuild_version}_Aml_${soc}_${release_codename}_${kernel}_$(date +"%Y.%m.%d.%H%M").img"
+    # Make Rockchip s9xxx armbian
+    build_image_file="${tmp_outpath}/Armbian_${armbian_rebuild_version}_RK_${soc}_${release_codename}_${kernel}_$(date +"%Y.%m.%d.%H%M").img"
     rm -f ${build_image_file} 2>/dev/null && sync
 
     IMG_SIZE=$((SKIP_MB + BOOT_MB + ROOT_MB))
@@ -722,7 +728,7 @@ loop_rebuild() {
 }
 
 # Show welcome message
-echo -e "Welcome to Rebuild Armbian for Amlogic s9xxx tv box!"
+echo -e "Welcome to Rebuild Armbian for Rockchip s9xxx tv box!"
 [ $(id -u) = 0 ] || error_msg "please run this script as root: [ sudo ./$0 ]"
 # Show server start information
 echo -e "Server CPU configuration information: \n$(cat /proc/cpuinfo | grep name | cut -f2 -d: | uniq -c) \n"
