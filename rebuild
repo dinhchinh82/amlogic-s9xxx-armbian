@@ -391,7 +391,7 @@ rootfstype=btrfs
 rootflags=compress=zstd:${ZSTD_LEVEL}
 extraargs=usbcore.autosuspend=-1
 extraboardargs=
-fdtfile=/dtb/rockchip/rk3328-beikeyun-1296mhz.dtb
+fdtfile=/dtb/rockchip/rk3328-box.dtb
 EOF
 echo "armbianEnv.txt -->"
 echo "==============================================================================="
@@ -537,6 +537,9 @@ refactor_files() {
     tag_rootfs="${tmp_build}/rootfs"
     mkdir -p ${tag_bootfs} ${tag_rootfs} && sync
 
+    process_msg "tag_bootfs: $tag_bootfs"
+    process_msg "tag_rootfs: $tag_rootfs"
+
     # Copy the full Armbian image
     cp -rf ${tmp_armbian}/* ${tag_rootfs} && sync
 
@@ -553,10 +556,17 @@ refactor_files() {
     cp -f ${uboot_path}/bootloader/* ${tag_rootfs}/usr/lib/u-boot
     # Copy the overload files
     cp -f ${uboot_path}/overload/* ${tag_bootfs}
-
+    # Create 
+    mkdir -p dtb/rockchip
+    mkdir -p ${tag_bootfs}/dtb/rockchip
+    process_msg "Da tao thu muc /dtb/rockchip"
     # Replace the kernel dtb-rockchip-5.4.188-flippy-71+o.tar.gz
     build_boot=$(ls ${kernel_path}/${kernel}/boot-${kernel}-*.tar.gz 2>/dev/null | head -n 1)
+    process_msg "build_boot: $build_boot "
+
     build_dtb=$(ls ${kernel_path}/${kernel}/dtb-rockchip-${kernel}-*.tar.gz 2>/dev/null | head -n 1)
+    process_msg "build_dtb: $build_dtb"
+    
     build_modules=$(ls ${kernel_path}/${kernel}/modules-${kernel}-*.tar.gz 2>/dev/null | head -n 1)
     build_header=$(ls ${kernel_path}/${kernel}/header-${kernel}-*.tar.gz 2>/dev/null | head -n 1)
     [[ -n "${build_boot}" && -n "${build_dtb}" && -n "${build_modules}" && -n "${build_header}" ]] || error_msg "The 4 kernel missing."
