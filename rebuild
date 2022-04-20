@@ -495,8 +495,7 @@ refactor_files() {
 
     # Processing partition files: bootfs
     cd ${tag_bootfs}
-    cat > armbianEnv.txt <<EOF
-cat > armbianEnv.txt <<EOF
+    cat > armbianEnv.txt <<EOF 
 verbosity=7
 overlay_prefix=rockchip
 rootdev=UUID=${ROOTFS_UUID}
