@@ -383,22 +383,6 @@ confirm_version() {
     [ -z "${ROOTFS_UUID}" ] && error_msg "The uuidgen is invalid, cannot continue."
 }
 
-cat > armbianEnv.txt <<EOF
-verbosity=7
-overlay_prefix=rockchip
-rootdev=UUID=${ROOTFS_UUID}
-rootfstype=btrfs
-rootflags=compress=zstd:${ZSTD_LEVEL}
-extraargs=usbcore.autosuspend=-1
-extraboardargs=
-fdtfile=/dtb/rockchip/rk3328-box.dtb
-EOF
-echo "armbianEnv.txt -->"
-echo "==============================================================================="
-cat armbianEnv.txt
-echo "==============================================================================="
-echo
-
 function extract_rockchip_boot_files() {
     echo -n "释放 Kernel zImage、uInitrd 及 dtbs 压缩包 ... "
     ( 
@@ -557,9 +541,14 @@ refactor_files() {
     # Copy the overload files
     cp -f ${uboot_path}/overload/* ${tag_bootfs}
     # Create 
-    mkdir -p dtb/rockchip
+    # mkdir -p dtb/rockchip
     mkdir -p ${tag_bootfs}/dtb/rockchip
     process_msg "Da tao thu muc /dtb/rockchip"
+
+    tar -xJf "${armbian_path}/dtb-rockchip-5.4.188-flippy-71+o.tar.gz" -C ${tag_bootfs}
+
+    cp "${armbian_path}/rk3328-box.dtb" ${tag_bootfs}/dtb/rockchip
+    process_msg "Da copy file rk3328-box.dtb"
     # Replace the kernel dtb-rockchip-5.4.188-flippy-71+o.tar.gz
     build_boot=$(ls ${kernel_path}/${kernel}/boot-${kernel}-*.tar.gz 2>/dev/null | head -n 1)
     process_msg "build_boot: $build_boot "
@@ -599,6 +588,21 @@ refactor_files() {
 
     # Processing partition files: bootfs
     cd ${tag_bootfs}
+    cat > armbianEnv.txt <<EOF
+cat > armbianEnv.txt <<EOF
+verbosity=7
+overlay_prefix=rockchip
+rootdev=UUID=${ROOTFS_UUID}
+rootfstype=btrfs
+rootflags=compress=zstd:6
+extraargs=usbcore.autosuspend=-1
+extraboardargs=
+fdtfile=/dtb/rockchip/rk3328-box.dtb
+EOF
+    echo "armbianEnv.txt -->"
+    echo "==============================================================================="
+    cat armbianEnv.txt
+    echo "==============================================================================="
 
     # Add u-boot.ext for 5.10 kernel
     # if [[ "${K510}" -eq "1" ]]; then
