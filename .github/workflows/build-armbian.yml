@@ -55,6 +55,7 @@ on:
           - beikeyun
           - l1pro
           - vplus
+          - tqc-a01
       armbian_kernel:
         description: "Select kernel version."
         required: false
